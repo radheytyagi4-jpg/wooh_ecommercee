@@ -1,4 +1,7 @@
 import "./globals.css";
+import Header from "./component/common/Header/page";
+import Footer from "./component/common/Footer/page";
+import Hamburger from "./component/home-components/Hamburger";
 
 export const metadata = {
   title: "Create Next App",
@@ -7,11 +10,12 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
+    <>
+    <Header/>
     <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+      lang="en">
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
+    </>
   );
 }

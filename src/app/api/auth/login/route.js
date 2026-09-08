@@ -1,51 +1,112 @@
-//data ayga
-//validation hogi
-//user find krna 
-//password verify krna
-//next auth use krna
-//response dena login ka
-//or tokens send krnw
+import { NextResponse } from "next/server";
 
-import { connectDb } from "@/app/config/db";
-import { User } from "@/app/model/user";
-import bcrypt from "bcrypt";
-import { ApiError } from "@/app/lib/ApiError";
-import { ApiResponse } from "@/app/lib/ApiResponse";
-import { sendResponse } from "@/app/lib/sendResponse";
+import connectDB from "@/app/lib/db";
+import User from "@/app/model/user";
+import { signToken } from "@/app/lib/auth";
 
-async function POST(request) {
-    try {
-        const { username, password } = await request.json();
+export async function POST(request) {
+  try {
+    const body = await request.json();
 
-        if (!username || !password) {
-            return sendResponse(new ApiError(400, "Credentials are required"));
+    const {
+      username,
+      password,
+    } = body;
+
+    if (!username || !password) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Username and password are required",
+        },
+        {
+          status: 400,
         }
-
-        await connectDb();
-
-        const user = await User.findOne({ username });
-        if (!user) {
-            return sendResponse(new ApiError(404, "User not found"));
-        }
-
-        if (!user.otpVerify) {
-            return sendResponse(new ApiError(403, "Please verify your account first"));
-        }
-
-        const isPasswordCorrect = await bcrypt.compare(password, user.password);
-        if (!isPasswordCorrect) {
-            return sendResponse(new ApiError(401, "Invalid credentials"));
-        }
-
-        const accessToken = user.generateAccessToken();
-        const refreshToken = user.generateRefreshToken();
-
-        return sendResponse(new ApiResponse(200, { accessToken, refreshToken }, "User logged in successfully"));
-
-    } catch (error) {
-        console.log("error while logging in : ", error);
-        return sendResponse(new ApiError(500, "Something went wrong"));
+      );
     }
-}
 
-export { POST };
+    await connectDB();
+
+    const user = await User.findOne({
+      username: username.toLowerCase(),
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid username or password",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    const validPassword =
+      await user.comparePassword(password);
+
+    if (!validPassword) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Invalid username or password",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    if (!user.otpVerify) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Please verify your email first",
+        },
+        {
+          status: 403,
+        }
+      );
+    }
+
+    const token = signToken(user);
+
+    const response = NextResponse.json({
+      success: true,
+      message: "Login successful",
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+    response.cookies.set(
+      "wooh_token",
+      token,
+      {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 * 7,
+        path: "/",
+      }
+    );
+
+    return response;
+  } catch (error) {
+    console.error("LOGIN ERROR:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Login failed",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

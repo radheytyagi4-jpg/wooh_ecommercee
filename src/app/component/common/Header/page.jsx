@@ -13,7 +13,7 @@ function Header() {
                     <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
                     <Image src="/logo.png" className="rounded-full" alt="Logo" width={80} height={80} />
                     </a>
-                    <button><Image href="/" src="/user-profile.png" alt="User Profile" width={32} height={32} /></button>
+                    <button placeholder="Search" className="bg-[#F8F2E7] text-[#1E3B2C] border border-[#1E3B2C] rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#1E3B2C] focus:border-transparent" />
                 </div>
             </nav>
 

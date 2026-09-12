@@ -1,5 +1,5 @@
 import { connectDb } from "@/app/config/db";
-import { Product } from "@/app/model/product";
+import Product from "@/app/model/product";
 import { ApiError } from "@/app/lib/ApiError";
 import { ApiResponse } from "@/app/lib/ApiResponse";
 import { sendResponse } from "@/app/lib/sendResponse";

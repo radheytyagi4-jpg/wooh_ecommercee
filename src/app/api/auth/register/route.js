@@ -3,7 +3,7 @@ import { ApiError } from "@/app/lib/ApiError";
 import { ApiResponse } from "@/app/lib/ApiResponse";
 import { sendResponse } from "@/app/lib/sendResponse";
 import { transporter } from "@/app/lib/emailSender";
-import { User } from "@/app/model/user";
+import  User  from "@/app/model/user";
 
 async function POST(request) {
     try {

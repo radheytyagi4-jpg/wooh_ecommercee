@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-
-import connectDB from "@/app/lib/db";
+import { connectDb } from "@/app/config/db";
 import User from "@/app/model/user";
 import { signToken } from "@/app/lib/auth";
 
@@ -25,7 +24,7 @@ export async function POST(request) {
       );
     }
 
-    await connectDB();
+    await connectDb();
 
     const user = await User.findOne({
       username: username.toLowerCase(),

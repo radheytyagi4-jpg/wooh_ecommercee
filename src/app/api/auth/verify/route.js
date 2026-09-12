@@ -6,7 +6,7 @@
 //send response
 
 import { connectDb } from "@/app/config/db";
-import { User } from "@/app/model/user";
+import User from "@/app/model/user";
 import { ApiError } from "@/app/lib/ApiError";
 import { ApiResponse } from "@/app/lib/ApiResponse";
 import { sendResponse } from "@/app/lib/sendResponse";
@@ -31,7 +31,10 @@ async function POST(request) {
             return sendResponse(new ApiError(400, "Invalid OTP, please register again"));
         }
 
-        await User.updateOne({ _id: user._id }, { otpVerify: true, otp: undefined });
+        await User.updateOne(
+            { _id: user._id },
+            { $set: { otpVerify: true }, $unset: { otp: "" } }
+        );
 
 
         return sendResponse(new ApiResponse(200, { email: user.email }, "User verified successfully"));

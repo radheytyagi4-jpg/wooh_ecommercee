@@ -15,7 +15,7 @@ export default function page() {
       const res = await fetch("/api/cart");
 
       if (res.status === 401) {
-        window.location.href = "/login";
+        window.location.href = "/Auth";
         return;
       }
 

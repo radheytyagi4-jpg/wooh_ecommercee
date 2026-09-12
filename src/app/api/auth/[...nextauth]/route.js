@@ -1,4 +1,4 @@
-import { authOtpions } from "@/app/lib/authOtpions";
-import NextAuth from "next-auth"
+// import { authOtpions } from "@/app/lib/authOtpions";
+// import NextAuth from "next-auth"
 
-export default NextAuth(authOtpions);
+// export default NextAuth(authOtpions);
